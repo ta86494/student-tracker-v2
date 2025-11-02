@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Upload Answer{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4>Upload Answer for: {{ question.title }}</h4>
+        <p class="small text-muted">Question file: <a href="{{ url_for('uploaded_file', filename=question.filename) }}">{{ question.filename }}</a></p>
+        <form method="post" enctype="multipart/form-data">
+          <div class="mb-3"><input class="form-control" type="file" name="file" required></div>
+          <div class="d-grid"><button class="btn btn-success">Upload Answer</button></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

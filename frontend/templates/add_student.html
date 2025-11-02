@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Add Student{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4>Add New Student</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{{ url_for('add_student') }}">
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Username (for login)</label>
+              <input type="text" class="form-control" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password (or leave blank to auto-generate)</label>
+              <input type="password" class="form-control" name="password" minlength="8" maxlength="24" placeholder="Auto-generated if left blank">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Class / Section</label>
+              <input type="text" class="form-control" name="class_name">
+            </div>
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary">Add Student & Create Account</button>
+              <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

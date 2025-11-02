@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Home - Trackademy{% endblock %}
+{% block content %}
+<div class="hero py-5 text-center text-white">
+  <div class="container">
+    <h1 class="display-5">Trackademy</h1>
+    <p class="lead mt-3">Empowering Teachers and Students to Succeed Together</p>
+    <div class="mt-4">
+      <a class="btn btn-light btn-lg me-2" href="{{ url_for('login') }}">Login</a>
+      <a class="btn btn-outline-light btn-lg" href="{{ url_for('register') }}">Register</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

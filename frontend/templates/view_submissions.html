@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}View Submissions{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="m-0">📘 Submissions for: {{ question.title }}</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
+  </div>
+
+  <!-- Question Card -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body bg-primary text-white rounded">
+      <h5 class="mb-0">{{ question.title }}</h5>
+      <p class="mb-1"><small>Uploaded: {{ question.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+      <a href="{{ url_for('uploaded_file', filename=question.filename) }}" class="btn btn-light btn-sm mt-2">⬇ Download Question</a>
+    </div>
+  </div>
+
+  <!-- Submissions Table -->
+  <div class="card shadow-lg mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">📂 Student Submissions</h5>
+      <small>Tracking submissions, plagiarism, and feedback</small>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Student</th>
+              <th>Answer Title</th>
+              <th>Uploaded At</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in answers %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ users.get(a.uploader_id) }}</td>
+              <td>{{ a.title }}</td>
+              <td>{{ a.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+
+              <!-- Submission Tracking Status -->
+              <td>
+                {% set fb = feedbacks.get(a.id) if feedbacks else None %}
+                {% if fb %}
+                  <span class="badge bg-success">✅ Feedback Given</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">🕒 Pending Feedback</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('uploaded_file', filename=a.filename) }}">⬇ Download</a>
+                <a class="btn btn-sm btn-success" href="{{ url_for('add_feedback', answer_id=a.id) }}">💬 Feedback</a>
+              </td>
+            </tr>
+
+            <!-- Feedback Info (if exists) -->
+            {% if fb %}
+            <tr>
+              <td colspan="6" class="bg-light text-muted ps-5">
+                <small>
+                  💬 <strong>Feedback:</strong> {{ fb.comments or 'No comments' }}
+                  {% if fb.rating %}
+                    | ⭐ Rating: {{ fb.rating }}/5
+                  {% endif %}
+                  <span class="float-end text-secondary">
+                    <small>{{ fb.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                  </span>
+                </small>
+              </td>
+            </tr>
+            {% endif %}
+
+            <!-- Plagiarism Info -->
+            {% if plagiarism_scores and plagiarism_scores.get(a.id) %}
+            <tr>
+              <td colspan="6" class="bg-warning-subtle ps-5">
+                <small><strong>⚠️ Similarity Detected:</strong>
+                  {% for fname, score in plagiarism_scores[a.id] %}
+                    {% if score > 0.85 %}
+                      <span class="text-danger fw-bold">{{ fname }}</span> — {{ (score * 100)|round(1) }}%
+                    {% elif score > 0.6 %}
+                      <span class="text-warning">{{ fname }}</span> — {{ (score * 100)|round(1) }}%
+                    {% else %}
+                      <span class="text-success">{{ fname }}</span> — {{ (score * 100)|round(1) }}%
+                    {% endif %}
+                    {% if not loop.last %}, {% endif %}
+                  {% endfor %}
+                </small>
+              </td>
+            </tr>
+            {% endif %}
+            {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted">No submissions uploaded yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-warning-subtle {
+    background-color: #fff3cd !important;
+  }
+  .badge {
+    font-size: 0.85rem;
+    padding: 0.4em 0.6em;
+  }
+</style>
+{% endblock %}

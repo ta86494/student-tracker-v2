@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="m-0">Student Dashboard</h2>
+  <div class="text-end">
+    <div class="fw-bold">Logged in as {{ current_user.username }}</div>
+  </div>
+</div>
+
+<!-- Available Questions -->
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+    <h5>Available Questions</h5>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Uploaded</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for q in questions %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ q.title }}</td>
+            <td>{{ q.uploaded_at }}</td>
+            <td>
+              <a class="btn btn-sm btn-outline-primary" href="{{ url_for('uploaded_file', filename=q.filename) }}">Download</a>
+              <a class="btn btn-sm btn-success" href="{{ url_for('upload_answer', question_id=q.id) }}">Upload Answer</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4">No questions</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Submissions -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h5>Your Submissions</h5>
+    {% if my_answers %}
+    <ul class="list-group">
+      {% for a in my_answers %}
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ a.title }}</strong><br>
+            <a class="btn btn-sm btn-outline-primary mt-2" href="{{ url_for('uploaded_file', filename=a.filename) }}">Download Submission</a>
+          </div>
+          <div>
+            {% if feedbacks.get(a.id) %}
+              {% for fb in feedbacks[a.id] %}
+                <div class="mt-2 p-2 border rounded bg-light">
+                  <small><strong>Feedback:</strong> {{ fb.comments }}</small><br>
+                  {% if fb.rating %}
+                    <small>Rating: ⭐ {{ fb.rating }}/5</small>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% else %}
+              <small class="text-muted">No feedback yet</small>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No submissions yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

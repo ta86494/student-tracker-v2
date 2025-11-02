@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="m-0">Teacher Dashboard</h2>
+  <div class="text-end">
+    <div class="fw-bold">Logged in as {{ current_user.username }}</div>
+  </div>
+</div>
+
+<!-- 🌟 Summary Cards -->
+<div class="row mb-4">
+  <!-- Total Students -->
+  <div class="col-sm-4">
+    <div class="card text-white bg-primary shadow-sm mb-3">
+      <div class="card-body text-center">
+        <h5>Students</h5>
+        <p class="display-6">{{ total_students }}</p>
+        <small class="text-light">Total registered students</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Questions -->
+  <div class="col-sm-4">
+    <div class="card text-white bg-info shadow-sm mb-3">
+      <div class="card-body text-center">
+        <h5>Questions</h5>
+        <p class="display-6">{{ total_questions }}</p>
+        <small class="text-light">Questions uploaded by you</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Summary (Optional Future Use) 
+  <div class="col-sm-4">
+    <div class="card text-white bg-success shadow-sm mb-3">
+      <div class="card-body text-center">
+        <h5>Feedbacks</h5>
+        <p class="display-6">{{ total_feedbacks if total_feedbacks else 0 }}</p>
+        <small class="text-light">Total feedback given</small>
+      </div>
+    </div>
+  </div>
+</div>
+-->
+
+<!-- 📄 Questions Section -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Uploaded Questions</h5>
+    <a href="{{ url_for('upload_question') }}" class="btn btn-light btn-sm">+ Upload New Question</a>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Uploaded On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for q in questions %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ q.title }}</td>
+              <td>{{ q.uploaded_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('uploaded_file', filename=q.filename) }}" target="_blank">View</a>
+                <a class="btn btn-sm btn-outline-success" href="{{ url_for('view_submissions', question_id=q.id) }}">View Submissions</a>
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="4" class="text-center text-muted">No questions uploaded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 🎓 Registered Students Section -->
+<div class="card shadow-lg">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Registered Students</h5>
+    <a href="{{ url_for('download_students') }}" class="btn btn-sm btn-light">⬇ Download CSV</a>
+  </div>
+  <div class="card-body">
+    {% if students %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Class</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ s.name }}</td>
+                <td>{{ s.email }}</td>
+                <td>{{ s.student_class }}</td>
+                <td>
+                  <form method="POST" action="{{ url_for('delete_student', sid=s.id) }}" 
+                        onsubmit="return confirm('Are you sure you want to delete this student?')">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-muted text-center mb-0">No students registered yet.</p>
+    {% endif %}
+  </div>
+</div>
+<!-- Analytics Section -->
+<div class="container mt-5">
+  <div class="card shadow-lg">
+    <div class="card-header bg-dark text-white">
+      <h5 class="mb-0">📊 Feedback & Submission Analytics</h5>
+    </div>
+    <div class="card-body">
+      <canvas id="analyticsChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const response = await fetch("/api/analytics");
+      const data = await response.json();
+
+      const ctx = document.getElementById("analyticsChart").getContext("2d");
+
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data.labels,
+          datasets: [
+            {
+              label: "Submissions",
+              data: data.submissions,
+              backgroundColor: "rgba(54, 162, 235, 0.6)"
+            },
+            {
+              label: "Feedbacks",
+              data: data.feedbacks,
+              backgroundColor: "rgba(75, 192, 192, 0.6)"
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
+            title: { display: true, text: "Student Activity Overview" }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    } catch (err) {
+      console.error("Analytics fetch failed:", err);
+    }
+  });
+</script>
+{% endblock %}

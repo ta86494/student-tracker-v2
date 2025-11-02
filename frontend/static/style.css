@@ -1,0 +1,1 @@
+:root{--primary:#0d6efd;--muted:#6c757d;} body{background:#f1f5f9;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;} .hero{background:linear-gradient(135deg, var(--primary), #2b8cff);border-radius:8px;padding:60px 15px;margin-top:20px;} .card{border-radius:12px;} footer{opacity:0.95} @media (max-width:576px){ .hero{padding:30px} .display-5{font-size:28px} }
