@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
-from .plagiarism import check_similarity_texts
+from backend.plagiarism import check_similarity_texts
 import secrets, csv
 from werkzeug.security import generate_password_hash
 
@@ -651,5 +651,5 @@ def create_app():
     return app
 
 if __name__ == '__main__':
-    app=create_app()
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT',8000)), debug=false)
+    create_app()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT',8000)), debug=False)
