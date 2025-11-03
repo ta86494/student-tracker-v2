@@ -27,7 +27,7 @@ app = Flask(
 )
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-this-secret')
-db_path = os.environ.get('DATABASE_URL', 'sqlite:///student_project_tracker.db')
+db_path = os.environ.get('DATABASE_URL', 'sqlite:////home/student_project_tracker.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
@@ -653,4 +653,4 @@ def create_app():
 
 if __name__ == '__main__':
     create_app()
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT',8000)), debug=False)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT',8000)), debug=True)
