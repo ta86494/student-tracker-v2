@@ -19,10 +19,11 @@ PASSWORD_MIN = 8
 PASSWORD_MAX = 24
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 app = Flask(
     __name__,
-    static_folder='frontend/static',
-    template_folder='frontend/templates'
+    static_folder=os.path.join(BASE_DIR, '../frontend/static'),
+    template_folder=os.path.join(BASE_DIR, '../frontend/templates')
 )
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'change-this-secret')
